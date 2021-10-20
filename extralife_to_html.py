@@ -14,6 +14,7 @@ extralife_participant_path = '.participant&participantID={}'
 extralife_team_path = '.team&teamID={}'
 
 extralife_team_api_path = 'https://www.extra-life.org/api/1.3/teams/{}'
+extralife_participant_api_path = 'https://www.extra-life.org/api/1.3/participants/{}'
 
 team_save_dir = 'team'
 participant_save_dir = 'user'
@@ -66,6 +67,12 @@ def establish_session():
     # session = requests.Session()
     # session.headers['User-Agent'] = 'Mozilla/5.0'
 
+def get_participant_data(save_path, item_name, item_id):
+    global extralife_participant_api_path
+    
+    r = requests.session().get(extralife_participant_api_path.format(item_id))
+    _save_file(save_path, item_name +'_data.json', r.json())
+
 def get_team_data(save_path, item_name, item_id):
     global extralife_team_api_path
     
@@ -106,6 +113,7 @@ def save_all_widgets():
         
     for participant in participants:
         process_item(participant_save_dir, participant.name, participant.id, False)
+        get_participant_data(participant_save_dir, participant.name, participant.id)
     
 establish_session()
 _read_configs()

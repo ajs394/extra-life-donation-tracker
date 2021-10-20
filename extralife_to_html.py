@@ -13,6 +13,8 @@ extralife_base_path = 'https://www.extra-life.org/index.cfm?fuseaction=donorDriv
 extralife_participant_path = '.participant&participantID={}'
 extralife_team_path = '.team&teamID={}'
 
+extralife_team_api_path = 'https://www.extra-life.org/api/1.3/teams/{}'
+
 team_save_dir = 'team'
 participant_save_dir = 'user'
 
@@ -64,6 +66,12 @@ def establish_session():
     # session = requests.Session()
     # session.headers['User-Agent'] = 'Mozilla/5.0'
 
+def get_team_data(save_path, item_name, item_id):
+    global extralife_team_api_path
+    
+    r = requests.session().get(extralife_team_api_path.format(item_id))
+    _save_file(save_path, item_name +'_data.json', r.json())
+
 def process_item(save_path, item_name, item_id, isTeam):
     global session
     global extralife_base_path
@@ -94,6 +102,7 @@ def save_all_widgets():
 
     for team in teams:
         process_item(team_save_dir, team.name, team.id, True)
+        get_team_data(team_save_dir, team.name, team.id)
         
     for participant in participants:
         process_item(participant_save_dir, participant.name, participant.id, False)
